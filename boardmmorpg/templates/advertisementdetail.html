@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+{% extends 'base.html' %}
+
+{% block title %}
+Объявление
+{% endblock title %}
+
+{% block content %}
+
+<h1>Название объявления: {{ advertisementdetail.title }}</h1>
+<p>Автор:  {{ advertisementdetail.author}}</p>
+
+{% if advertisementdetail.image %}
+<p>Скин</p>
+<img src="{{ advertisementdetail.image.url}}" alt="connect" style="max-height:300px">
+
+{% endif %}
+
+
+<p>Текст объявления: {{ advertisementdetail.text}}</p>
+
+<p>Категория объявления: {{ advertisementdetail.Category }}</p>
+
+<p>Дата объявления - {{ advertisementdetail.dateCreation }}</p>
+
+<p>___________________________________</p>
+<p>Коментарии:  </p>
+{% for item in advertisementdetail.comments.all %}
+
+{% if item.commentStatus in "Accept" %}
+{{item.text}}
+<a>   Автор:  </a>
+{{item.commentUser}}
+{% if request.user.is_authenticated %}
+{% if  user.username in  advertisementdetail.author.username %}
+ <a href="{% url 'CommentUpdateView' item.id %}"><u>Модерация </u></a>
+
+{% endif %}
+{% endif %}
+<p>___________________________________</p>
+{% endif %}
+
+{% endfor %}
+
+
+{% if request.user.is_authenticated %}
+<p>Добавить коментарий</p>
+<form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }} <!-- Теперь нам нужна только готовая форма и кнопка -->
+    <input type="submit" value="Сохранить ">
+</form>
+{% endif %}
+{% endblock content %}
+
+
+</html>
